@@ -2,7 +2,7 @@
 
 ## Prerequisites 
 
-You will need both `kubectl` and `Helm 3` to install Rudr. 
+You will need both `kubectl` and `Helm 3` to install Rudr. Usage of [Chocolatey](https://chocolatey.org/) on Windows and [Homebrew](https://brew.sh/) on OS X can simplify the setup. On Linux, installation steps are different depending of your distributions.
 
 1. Clone the repository. 
 
@@ -10,18 +10,28 @@ You will need both `kubectl` and `Helm 3` to install Rudr.
     git clone https://github.com/oam-dev/rudr.git
     ```
 
-2. Install `kubectl`. The below is for MacOS. For other OS, please go to https://kubernetes.io/docs/tasks/tools/install-kubectl/. 
+2. Install `kubectl`. 
+    - [Linux](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-linux) 
+    - [MacOS](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-macos)
+        ```
+        brew install kubernetes-cli
+        ```
+    - [Windows](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl-on-windows)
+        ```
+        choco install kubernetes-cli
+        ```
 
-    ```bash
-    curl -LO "https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/darwin/amd64/kubectl"
-    ```
-
-3. Install `Helm 3`. The below is copied directly from the [Helm installation guide](https://helm.sh/docs/using_helm/#installing-helm). 
-
-    1. Download your desired version of [Helm 3 from the releases page](https://github.com/helm/helm/releases)
-    2. Unpack it (`tar -zxvf helm-v3.0.0-linux-amd64.tgz`). Note that the command might change depending on the Helm 3 version you installed. 
-    3. Find the `helm` binary in the unpacked directory, and move it to its desired destination (`mv linux-amd64/helm /usr/local/bin/helm`)
-    4. From there, you should be able to run the client: helm help.
+3. Install `Helm 3`:
+    - Linux
+        [Use convenience script](https://helm.sh/docs/intro/install/#from-script)
+    - MacOS
+        ```
+        brew install helm@3.0.0
+        ```
+    - Windows 
+        ```
+        choco install kubernetes-helm  --version 3.0.0
+        ```
 
 4. As of this writing, the supported versions of Kubernetes are 1.15 and 1.16, so make sure you have a Kubernetes cluster with a compatible version. To get started with a Kubernetes cluster, see the options below: 
 
@@ -164,6 +174,23 @@ Developers may prefer to run a local copy of the Rudr daemon. To do so:
 1. Make sure the CRDs are installed on your target cluster
 2. Make sure your current Kubernetes context is set to your target cluster. Rudr will inherit the credentials from this context entry.
 3. From the base directory of the code, run `make run`. This will start Rudr in the foreground, running locally, but listening on the remote cluster.
+
+### Development on Windows
+On Windows, running for development is advised to be performed under the [Windows Subsystem For Linux](https://docs.microsoft.com/en-us/windows/wsl/install-win10). Following steps are for the default Ubuntu WSL implementation (Ubuntu).
+1. Install Cargo  
+    `sudo apt install cargo`
+2. Install Kubectl (from [official doc](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-using-native-package-management))
+    ```
+    sudo apt-get update && sudo apt-get install -y apt-transport-https
+    curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+    sudo apt-get update
+    sudo apt-get install -y kubectl
+    ```
+3. Expose your Windows kubeConfig to WSL by setting the KUBECONFIG variable. By default, (no special kubeconfig setting) the config file is located at $HOME\<username>\.kube\config. If it is so, you can use the following command: 
+
+    `export KUBECONFIG="/mnt/c/Users/<username>/.kube/config"`
+4. run `make run`
 
 ## Next Steps
 
